@@ -87,7 +87,7 @@ bool Adafruit_TLA202x::begin(uint8_t i2c_address, TwoWire *wire,
 }
 
 
-/*!  @brief Initializer for post i2c/spi init
+/*!  @brief Initializer for post i2c init
  *   @param sensor_id Optional unique ID for the sensor set
  *   @returns True if chip identified and initialized
  */
@@ -101,33 +101,22 @@ bool Adafruit_TLA202x::init(void) {
   return true;
 }
 
-/**
- * @brief Gets the current rate at which pressure and temperature measurements
- * are taken
- *
- * @return tla202x_rate_t The current data rate
- */
-tla202x_rate_t Adafruit_TLA202x::getDataRate(void) {
-  Adafruit_BusIO_Register ctrl1 = Adafruit_BusIO_Register(
-      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, TLA202x_CTRL_REG1, 1);
-  Adafruit_BusIO_RegisterBits data_rate =
-      Adafruit_BusIO_RegisterBits(&ctrl1, 3, 4);
 
-  return (tla202x_rate_t)data_rate.read();
-}
-/**
- * @brief Sets the rate at which pressure and temperature measurements
- *
- * @param new_data_rate The data rate to set. Must be a `tla202x_rate_t`
- */
-void Adafruit_TLA202x::setDataRate(tla202x_rate_t new_data_rate) {
-  Adafruit_BusIO_Register ctrl1 = Adafruit_BusIO_Register(
-      i2c_dev, spi_dev, ADDRBIT8_HIGH_TOREAD, TLA202x_CTRL_REG1, 1);
-  Adafruit_BusIO_RegisterBits data_rate =
-      Adafruit_BusIO_RegisterBits(&ctrl1, 3, 4);
+// tla202x_rate_t Adafruit_TLA202x::getDataRate(void) {
 
-  data_rate.write((uint8_t)new_data_rate);
-}
+//   Adafruit_BusIO_RegisterBits data_rate_bits =
+//       Adafruit_BusIO_RegisterBits(config_register, 3, 5);
+
+//   return (tla202x_rate_t)data_rate_bits.read();
+// }
+
+// void Adafruit_TLA202x::setDataRate(tla202x_rate_t new_data_rate) {
+
+//   Adafruit_BusIO_RegisterBits data_rate =
+//       Adafruit_BusIO_RegisterBits(config_register, 3, 5);
+
+//   data_rate.write((uint8_t)new_data_rate);
+// }
 
 
 float Adafruit_TLA202x::readVoltage(tla202x_channel_t channel){
@@ -137,12 +126,22 @@ float Adafruit_TLA202x::readVoltage(tla202x_channel_t channel){
 }
 
 float Adafruit_TLA202x::readVoltage(void){
-
+  voltage = 1000.0;
+  return voltage;
 }
-
+/**
+ * @brief Gets the current rate at which pressure and temperature measurements
+ * are taken
+ *
+ * @return tla202x_rate_t The current data rate
+ */
 tla202x_rate_t Adafruit_TLA202x::getDataRate(void){
   Adafruit_BusIO_RegisterBits rate_bits = Adafruit_BusIO_RegisterBits(config_register, 3, 5);
-}
+}/**
+ * @brief Sets the rate at which pressure and temperature measurements
+ *
+ * @param new_data_rate The data rate to set. Must be a `tla202x_rate_t`
+ */
 void Adafruit_TLA202x::setDataRate(tla202x_rate_t data_rate){
   Adafruit_BusIO_RegisterBits rate_bits = Adafruit_BusIO_RegisterBits(config_register,3, 5);
 }

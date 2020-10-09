@@ -107,10 +107,12 @@ public:
 
   bool init(void);
 
-  tla202x_rate_t getDataRate(void);
-  void setDataRate(tla202x_rate_t data_rate);
   float readVoltage(tla202x_channel_t channel);
   float readVoltage(void);
+
+  tla202x_rate_t getDataRate(void);
+  void setDataRate(tla202x_rate_t data_rate);
+
   bool setMode(tla202x_mode_t mode);
   tla202x_mode_t getMode(void);
 
