@@ -81,9 +81,9 @@ typedef enum {
   TLA202x_MUX_AIN1_AIN3, ///< AINp = AIN 1, AINn = AIN 3
   TLA202x_MUX_AIN2_AIN3, ///< AINp = AIN 2, AINn = AIN 3
   TLA202x_MUX_AIN0_GND,  ///< AINp = AIN 0, AINn = GND
-  TLA202x_MUX_AIN1_GND,  ///< AINp = AIN 0, AINn = GND
-  TLA202x_MUX_AIN2_GND,  ///< AINp = AIN 0, AINn = GND
-  TLA202x_MUX_AIN3_GND,  ///< AINp = AIN 0, AINn = GND
+  TLA202x_MUX_AIN1_GND,  ///< AINp = AIN 1, AINn = GND
+  TLA202x_MUX_AIN2_GND,  ///< AINp = AIN 2, AINn = GND
+  TLA202x_MUX_AIN3_GND,  ///< AINp = AIN 3, AINn = GND
 } tla202x_mux_t;
 
 /**
@@ -99,6 +99,10 @@ typedef enum {
   TLA202x_RANGE_0_256_V  ///< Measurements range from +0.256 V to -0.256 V
 } tla202x_range_t;
 
+typedef enum {
+  TLA202x_STATE_NO_READ, ///< Single-shot read in progress
+  TLA202x_STATE_READ,    ///< Single-shot read available to read or start read
+} tla202x_state_t;
 /*!
  *    @brief  Class that stores state and functions for interacting with
  *            the TLA202x 12-bit ADCs
@@ -114,9 +118,10 @@ public:
 
   float readVoltage(tla202x_channel_t channel);
   float readVoltage(void);
+  float readOnce(tla202x_channel_t channel);
 
   tla202x_rate_t getDataRate(void);
-  void setDataRate(tla202x_rate_t rate);
+  bool setDataRate(tla202x_rate_t rate);
 
   bool setMode(tla202x_mode_t mode);
   tla202x_mode_t getMode(void);
@@ -127,6 +132,9 @@ public:
   bool setRange(tla202x_range_t range);
   tla202x_range_t getRange(void);
 
+  tla202x_state_t getOperationalState(void);
+  bool startOneShot(void);
+
 private:
   void _read(void);
 
@@ -135,7 +143,7 @@ private:
 
   float voltage; ///< Last reading's pressure (hPa) before scaling
   tla202x_range_t current_range = NULL;
-
+  tla202x_mode_t current_mode = NULL;
   Adafruit_I2CDevice *i2c_dev = NULL; ///< Pointer to I2C bus interface
 };
 

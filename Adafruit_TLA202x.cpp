@@ -147,6 +147,47 @@ float Adafruit_TLA202x::readVoltage(void) {
   voltage /= 1000.0; // mV =>V
   return voltage;
 }
+
+/**
+ * @brief Set the active input to the given channel and return the newest
+ * reading
+ *
+ * @param channel The channel to read from
+ * @return float The voltage in Volts
+ */
+float Adafruit_TLA202x::readOnce(tla202x_channel_t channel) {
+  // single channel to gnd  are the last 4 mux enums
+  setMux((tla202x_mux_t)channel + 4);
+  startOneShot();
+  while (getOperationalState() == TLA202x_STATE_NO_READ) {
+    delay(1);
+  }
+  return readVoltage();
+}
+/**
+ * @brief Read the conversion status of the ADC for single-shot readings
+ *
+ * @return tla202x_state_t the current state
+ */
+tla202x_state_t Adafruit_TLA202x::getOperationalState(void) {
+  Adafruit_BusIO_RegisterBits os_bit =
+      Adafruit_BusIO_RegisterBits(config_register, 1, 15);
+  return (tla202x_state_t)os_bit.read();
+}
+
+/**
+ * @brief Switch to One-shot mode and start a single measurement
+ * @return true: success false: failure
+ */
+bool Adafruit_TLA202x::startOneShot(void) {
+  if (current_mode != TLA202x_MODE_ONE_SHOT) {
+    setMode(TLA202x_MODE_ONE_SHOT);
+  }
+  Adafruit_BusIO_RegisterBits os_bit =
+      Adafruit_BusIO_RegisterBits(config_register, 1, 15);
+  return (tla202x_state_t)(os_bit.write(TLA202x_STATE_READ));
+}
+
 /**
  * @brief Gets the current rate at which pressure and temperature measurements
  * are taken
@@ -156,14 +197,16 @@ float Adafruit_TLA202x::readVoltage(void) {
 tla202x_rate_t Adafruit_TLA202x::getDataRate(void) {
   Adafruit_BusIO_RegisterBits rate_bits =
       Adafruit_BusIO_RegisterBits(config_register, 3, 5);
+  return (tla202x_rate_t)rate_bits.read();
 } /**
    * @brief Sets the rate at which pressure and temperature measurements
    *
    * @param data_rate The data rate to set. Must be a `tla202x_rate_t`
    */
-void Adafruit_TLA202x::setDataRate(tla202x_rate_t data_rate) {
+bool Adafruit_TLA202x::setDataRate(tla202x_rate_t data_rate) {
   Adafruit_BusIO_RegisterBits rate_bits =
       Adafruit_BusIO_RegisterBits(config_register, 3, 5);
+  return rate_bits.write(data_rate);
 }
 
 /**
@@ -175,6 +218,7 @@ void Adafruit_TLA202x::setDataRate(tla202x_rate_t data_rate) {
 bool Adafruit_TLA202x::setMode(tla202x_mode_t mode) {
   Adafruit_BusIO_RegisterBits mode_bit =
       Adafruit_BusIO_RegisterBits(config_register, 1, 8);
+  current_mode = mode;
   return mode_bit.write(mode);
 }
 /**
@@ -185,7 +229,8 @@ bool Adafruit_TLA202x::setMode(tla202x_mode_t mode) {
 tla202x_mode_t Adafruit_TLA202x::getMode(void) {
   Adafruit_BusIO_RegisterBits mode_bit =
       Adafruit_BusIO_RegisterBits(config_register, 1, 8);
-  return (tla202x_mode_t)mode_bit.read();
+  current_mode = (tla202x_mode_t)mode_bit.read();
+  return current_mode;
 }
 
 /**
@@ -197,7 +242,9 @@ tla202x_mode_t Adafruit_TLA202x::getMode(void) {
 bool Adafruit_TLA202x::setMux(tla202x_mux_t mux) {
   Adafruit_BusIO_RegisterBits mux_bits =
       Adafruit_BusIO_RegisterBits(config_register, 3, 12);
-  return mux_bits.write(mux);
+  bool success = mux_bits.write(mux);
+  delay(100);
+  return success;
 }
 /**
  * @brief Read the input multiplexer  configuration
