@@ -22,13 +22,13 @@ void setup(void) {
   Serial.print("Data rate set to: ");
   switch (tla.getDataRate()) {
 
-    case TLA202x_RATE_128_SPS: Serial.println("128 SPS");
-    case TLA202x_RATE_250_SPS: Serial.println("250 SPS");
-    case TLA202x_RATE_490_SPS: Serial.println("490 SPS");
-    case TLA202x_RATE_920_SPS: Serial.println("920 SPS");
-    case TLA202x_RATE_1600_SPS: Serial.println("1600 SPS");
-    case TLA202x_RATE_2400_SPS: Serial.println("2400 SPS");
-    case TLA202x_RATE_3300_SPS: Serial.println("3300 SPS");
+    case TLA202x_RATE_128_SPS: Serial.println("128 SPS");break;
+    case TLA202x_RATE_250_SPS: Serial.println("250 SPS");break;
+    case TLA202x_RATE_490_SPS: Serial.println("490 SPS");break;
+    case TLA202x_RATE_920_SPS: Serial.println("920 SPS");break;
+    case TLA202x_RATE_1600_SPS: Serial.println("1600 SPS");break;
+    case TLA202x_RATE_2400_SPS: Serial.println("2400 SPS");break;
+    case TLA202x_RATE_3300_SPS: Serial.println("3300 SPS");break;
 
   }
 }

@@ -14,8 +14,8 @@
  *
  *	BSD license (see license.txt)
  */
-  // "requires_busio": "y",
-  //   "requires_sensor": "y",
+// "requires_busio": "y",
+//   "requires_sensor": "y",
 #ifndef _ADAFRUIT_TLA202x_H
 #define _ADAFRUIT_TLA202x_H
 
@@ -27,13 +27,13 @@
 
 #define TLA202x_I2CADDR_DEFAULT 0x48 ///< TLA202x default i2c address
 
-#define TLA202x_DATA_REG 0x00 ///< Data Register
+#define TLA202x_DATA_REG 0x00   ///< Data Register
 #define TLA202x_CONFIG_REG 0x01 ///< Configuration Register
 ///////////////////////////////////////////////////////////////
 
 /**
  * @brief Options for `readVoltage` to choose the single channel to read
- * 
+ *
  */
 typedef enum {
   TLA202x_CHANNEL_0, ///< Channel 0
@@ -48,29 +48,31 @@ typedef enum {
  * Allowed values for `setDataRate`.
  */
 typedef enum {
-  TLA202x_RATE_128_SPS,
-  TLA202x_RATE_250_SPS,
-  TLA202x_RATE_490_SPS,
-  TLA202x_RATE_920_SPS,
-  TLA202x_RATE_1600_SPS,
-  TLA202x_RATE_2400_SPS,
-  TLA202x_RATE_3300_SPS,
+  TLA202x_RATE_128_SPS,  ///< 128 Samples per Second
+  TLA202x_RATE_250_SPS,  ///< 250 Samples per Second
+  TLA202x_RATE_490_SPS,  ///< 490 Samples per Second
+  TLA202x_RATE_920_SPS,  ///< 920 Samples per Second
+  TLA202x_RATE_1600_SPS, ///< 1600 Samples per Second
+  TLA202x_RATE_2400_SPS, ///< 2400 Samples per Second
+  TLA202x_RATE_3300_SPS, ///< 3300 Samples per Second
 } tla202x_rate_t;
-
 
 /**
  * @brief Options for `setRate`
  *
  */
 typedef enum {
-  TLA202x_MODE_CONTINUOUS, // Take a new measurement as soon as the previous measurement is finished
-  TLA202x_MODE_ONE_SHOT // Take a single measurement then go into a low-power mode
+  TLA202x_MODE_CONTINUOUS, // Take a new measurement as soon as the previous
+                           // measurement is finished
+  TLA202x_MODE_ONE_SHOT    // Take a single measurement then go into a low-power
+                           // mode
 } tla202x_mode_t;
 
 /**
  * @brief Options for `setMux`
  *
- * Selects which inputs will be used for the positive (AINp) and negative (AINn) inputs
+ * Selects which inputs will be used for the positive (AINp) and negative (AINn)
+ * inputs
  *
  */
 typedef enum {
@@ -78,19 +80,23 @@ typedef enum {
   TLA202x_MUX_AIN0_AIN3, ///< AINp = AIN 0, AINn = AIN 3
   TLA202x_MUX_AIN1_AIN3, ///< AINp = AIN 1, AINn = AIN 3
   TLA202x_MUX_AIN2_AIN3, ///< AINp = AIN 2, AINn = AIN 3
-  TLA202x_MUX_AIN0_GND, ///< AINp = AIN 0, AINn = GND
-  TLA202x_MUX_AIN1_GND, ///< AINp = AIN 0, AINn = GND
-  TLA202x_MUX_AIN2_GND, ///< AINp = AIN 0, AINn = GND
-  TLA202x_MUX_AIN3_GND, ///< AINp = AIN 0, AINn = GND
+  TLA202x_MUX_AIN0_GND,  ///< AINp = AIN 0, AINn = GND
+  TLA202x_MUX_AIN1_GND,  ///< AINp = AIN 0, AINn = GND
+  TLA202x_MUX_AIN2_GND,  ///< AINp = AIN 0, AINn = GND
+  TLA202x_MUX_AIN3_GND,  ///< AINp = AIN 0, AINn = GND
 } tla202x_mux_t;
 
+/**
+ * @brief Options for `setRange`
+ *
+ */
 typedef enum {
   TLA202x_RANGE_6_144_V, ///< Measurements range from +6.144 V to -6.144 V
   TLA202x_RANGE_4_096_V, ///< Measurements range from +4.096 V to -4.096 V
   TLA202x_RANGE_2_048_V, ///< Measurements range from +2.048 V to -2.048 V
   TLA202x_RANGE_1_024_V, ///< Measurements range from +1.024 V to -1.024 V
   TLA202x_RANGE_0_512_V, ///< Measurements range from +0.512 V to -0.512 V
-  TLA202x_RANGE_0_256_V ///< Measurements range from +0.256 V to -0.256 V
+  TLA202x_RANGE_0_256_V  ///< Measurements range from +0.256 V to -0.256 V
 } tla202x_range_t;
 
 /*!
@@ -102,8 +108,7 @@ public:
   Adafruit_TLA202x();
   ~Adafruit_TLA202x();
 
-  bool begin(uint8_t i2c_addr = TLA202x_I2CADDR_DEFAULT,
-                 TwoWire *wire = &Wire, int32_t sensor_id = 0);
+  bool begin(uint8_t i2c_addr = TLA202x_I2CADDR_DEFAULT, TwoWire *wire = &Wire);
 
   bool init(void);
 
@@ -111,7 +116,7 @@ public:
   float readVoltage(void);
 
   tla202x_rate_t getDataRate(void);
-  void setDataRate(tla202x_rate_t data_rate);
+  void setDataRate(tla202x_rate_t rate);
 
   bool setMode(tla202x_mode_t mode);
   tla202x_mode_t getMode(void);
@@ -123,17 +128,15 @@ public:
   tla202x_range_t getRange(void);
 
 private:
-
   void _read(void);
 
   Adafruit_BusIO_Register *config_register = NULL;
   Adafruit_BusIO_Register *data_register = NULL;
 
   float voltage; ///< Last reading's pressure (hPa) before scaling
+  tla202x_range_t current_range = NULL;
 
   Adafruit_I2CDevice *i2c_dev = NULL; ///< Pointer to I2C bus interface
-
 };
-
 
 #endif
