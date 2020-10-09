@@ -264,11 +264,12 @@ bool Adafruit_TLA202x::setMux(tla202x_mux_t mux) {
   Adafruit_BusIO_RegisterBits mux_bits =
       Adafruit_BusIO_RegisterBits(config_register, 3, 12);
   bool success = mux_bits.write(mux);
+  // if mode is continuous, wait for a new reading to finish so the user doesn't
+  // get the previous read from the old mux config
   if (current_mode == TLA202x_MODE_CONTINUOUS) {
     // fastest is 1/3300 => 0.0003 seconds, 0.3ms
     // slowest is 1/128 => 0.0078125 seconds, 8ms
     delay(10); // sleep 10ms for good measure
-    Serial.println("sleeping");
   }
   return success;
 }
