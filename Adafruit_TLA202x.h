@@ -148,8 +148,8 @@ private:
   Adafruit_BusIO_Register *data_register = NULL;
 
   float voltage; ///< Last reading's pressure (hPa) before scaling
-  tla202x_range_t current_range = NULL;
-  tla202x_mode_t current_mode = NULL;
+  tla202x_range_t current_range;
+  tla202x_mode_t current_mode;
   Adafruit_I2CDevice *i2c_dev = NULL; ///< Pointer to I2C bus interface
 };
 

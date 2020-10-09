@@ -281,7 +281,7 @@ bool Adafruit_TLA202x::setMux(tla202x_mux_t mux) {
  * @return true: success false: failure
  */
 bool Adafruit_TLA202x::setChannel(tla202x_channel_t channel) {
-  return setMux((tla202x_mux_t)channel + 4);
+  return setMux((tla202x_mux_t)(channel + 4));
 }
 
 /**
