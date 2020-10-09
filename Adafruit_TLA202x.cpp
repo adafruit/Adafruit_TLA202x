@@ -97,19 +97,6 @@ bool Adafruit_TLA202x::init(void) {
 }
 
 /**
- * @brief Set the active input to the given channel and return the newest
- * reading
- *
- * @param channel The channel to read from
- * @return float The voltage in Volts
- */
-float Adafruit_TLA202x::readVoltage(tla202x_channel_t channel) {
-  // single channel to gnd  are the last 4 mux enums
-  setMux((tla202x_mux_t)channel + 4);
-  return readVoltage();
-}
-
-/**
  * @brief Read the voltage of the currently set channel
  *
  * @return float the voltage in volts
@@ -149,21 +136,43 @@ float Adafruit_TLA202x::readVoltage(void) {
 }
 
 /**
- * @brief Set the active input to the given channel and return the newest
+ * @brief Set the active input to the given channel and take a single
  * reading
  *
  * @param channel The channel to read from
  * @return float The voltage in Volts
  */
 float Adafruit_TLA202x::readOnce(tla202x_channel_t channel) {
+  setChannel(channel);
+  return readOnce();
+}
+
+/**
+ * @brief Set the active input to the given channel and take a single
+ * reading
+ *
+ * @param mux_setting Multiplexer setting to set the inputs to read between
+ * @return float The voltage in Volts
+ */
+float Adafruit_TLA202x::readOnce(tla202x_mux_t mux_setting) {
   // single channel to gnd  are the last 4 mux enums
-  setMux((tla202x_mux_t)channel + 4);
+  setMux(mux_setting);
+  return readOnce();
+}
+
+/**
+ * @brief Take a single voltage reading using the current mux settings
+ * @return float The voltage in Volts
+ */
+float Adafruit_TLA202x::readOnce(void) {
+  // single channel to gnd  are the last 4 mux enums
   startOneShot();
   while (getOperationalState() == TLA202x_STATE_NO_READ) {
     delay(1);
   }
   return readVoltage();
 }
+
 /**
  * @brief Read the conversion status of the ADC for single-shot readings
  *
@@ -202,6 +211,7 @@ tla202x_rate_t Adafruit_TLA202x::getDataRate(void) {
    * @brief Sets the rate at which pressure and temperature measurements
    *
    * @param data_rate The data rate to set. Must be a `tla202x_rate_t`
+   * @return true: success false: failure
    */
 bool Adafruit_TLA202x::setDataRate(tla202x_rate_t data_rate) {
   Adafruit_BusIO_RegisterBits rate_bits =
@@ -234,19 +244,6 @@ tla202x_mode_t Adafruit_TLA202x::getMode(void) {
 }
 
 /**
- * @brief Set the input multiplexer to a new configuration
- *
- * @param mux The new multiplexer setting
- * @return true: success false: failure
- */
-bool Adafruit_TLA202x::setMux(tla202x_mux_t mux) {
-  Adafruit_BusIO_RegisterBits mux_bits =
-      Adafruit_BusIO_RegisterBits(config_register, 3, 12);
-  bool success = mux_bits.write(mux);
-  delay(100);
-  return success;
-}
-/**
  * @brief Read the input multiplexer  configuration
  *
  * @return tla202x_mux_t the current mux configuration
@@ -256,6 +253,36 @@ tla202x_mux_t Adafruit_TLA202x::getMux(void) {
       Adafruit_BusIO_RegisterBits(config_register, 3, 12);
   return (tla202x_mux_t)mux_bits.read();
 }
+
+/**
+ * @brief Set the input multiplexer to a new configuration
+ *
+ * @param mux The new multiplexer setting
+ * @return true: success false: failure
+ */
+bool Adafruit_TLA202x::setMux(tla202x_mux_t mux) {
+  Adafruit_BusIO_RegisterBits mux_bits =
+      Adafruit_BusIO_RegisterBits(config_register, 3, 12);
+  bool success = mux_bits.write(mux);
+  if (current_mode == TLA202x_MODE_CONTINUOUS) {
+    // fastest is 1/3300 => 0.0003 seconds, 0.3ms
+    // slowest is 1/128 => 0.0078125 seconds, 8ms
+    delay(10); // sleep 10ms for good measure
+    Serial.println("sleeping");
+  }
+  return success;
+}
+
+/**
+ * @brief Set an input channel to be measured to GND
+ *
+ * @param channel The channel to be measured
+ * @return true: success false: failure
+ */
+bool Adafruit_TLA202x::setChannel(tla202x_channel_t channel) {
+  return setMux((tla202x_mux_t)channel + 4);
+}
+
 /**
  * @brief Read the current measurement range based on the gain of the amplifier
  *

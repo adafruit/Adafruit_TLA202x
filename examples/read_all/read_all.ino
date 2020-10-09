@@ -34,17 +34,33 @@ void setup(void) {
 }
 
 void loop() {
+  Serial.println("Read all channels in one-shot mode:");
   for (uint8_t channel_num= 0; channel_num < 4; channel_num++){
     Serial.print("Channel : ");
     Serial.print(channel_num);
     Serial.print(": ");
     Serial.print(
-      tla.readVoltage((tla202x_channel_t)channel_num)
+      tla.readOnce((tla202x_channel_t)channel_num)
       );
-    Serial.println(" volts to GND");
+
+    Serial.println(" volts");
+    Serial.println("");
+  }
+
+  Serial.println("Read each channel in continuous mode:");
+  tla.setMode(TLA202x_MODE_CONTINUOUS);
+
+  for (uint8_t channel_num= 0; channel_num < 4; channel_num++){
+    tla.setChannel((tla202x_channel_t)channel_num);
+    Serial.print("Channel : ");
+    Serial.print(channel_num);
+    Serial.print(": ");
+    Serial.print(tla.readVoltage());
+    Serial.println(" volts ");
+    Serial.println("");
   }
 
   Serial.println("");
-  delay(100);
+  Serial.println("");
+  delay(1000);
 }
-

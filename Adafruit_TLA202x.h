@@ -99,6 +99,10 @@ typedef enum {
   TLA202x_RANGE_0_256_V  ///< Measurements range from +0.256 V to -0.256 V
 } tla202x_range_t;
 
+/**
+ * @brief Possible states to be returned by `getOperationalState`
+ *
+ */
 typedef enum {
   TLA202x_STATE_NO_READ, ///< Single-shot read in progress
   TLA202x_STATE_READ,    ///< Single-shot read available to read or start read
@@ -116,8 +120,9 @@ public:
 
   bool init(void);
 
-  float readVoltage(tla202x_channel_t channel);
   float readVoltage(void);
+  float readOnce(void);
+  float readOnce(tla202x_mux_t mux_setting);
   float readOnce(tla202x_channel_t channel);
 
   tla202x_rate_t getDataRate(void);
@@ -126,6 +131,7 @@ public:
   bool setMode(tla202x_mode_t mode);
   tla202x_mode_t getMode(void);
 
+  bool setChannel(tla202x_channel_t channel);
   bool setMux(tla202x_mux_t mux);
   tla202x_mux_t getMux(void);
 

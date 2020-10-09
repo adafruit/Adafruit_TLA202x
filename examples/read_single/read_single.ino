@@ -21,7 +21,6 @@ void setup(void) {
 //  tla.setDataRate(TLA202x_RATE_1600_SPS);
   Serial.print("Data rate set to: ");
   switch (tla.getDataRate()) {
-
     case TLA202x_RATE_128_SPS: Serial.println("128 SPS");break;
     case TLA202x_RATE_250_SPS: Serial.println("250 SPS");break;
     case TLA202x_RATE_490_SPS: Serial.println("490 SPS");break;
@@ -29,7 +28,6 @@ void setup(void) {
     case TLA202x_RATE_1600_SPS: Serial.println("1600 SPS");break;
     case TLA202x_RATE_2400_SPS: Serial.println("2400 SPS");break;
     case TLA202x_RATE_3300_SPS: Serial.println("3300 SPS");break;
-
   }
 
   // tla.setRange(TLA202x_RANGE_6_144_V);
@@ -48,10 +46,10 @@ void setup(void) {
     case TLA202x_RANGE_0_256_V:
     Serial.println("+0.256 V to -0.256 V"); break;
   }
+
   //  tla.setMux(TLA202x_MUX_AIN0_GND);
   Serial.print("Multiplexer set to: ");
   switch (tla.getMux()) {
-
     case TLA202x_MUX_AIN0_AIN1:
       Serial.println("AINp = AIN 0, AINn = AIN 1"); break;
     case TLA202x_MUX_AIN0_AIN3:
@@ -70,10 +68,16 @@ void setup(void) {
       Serial.println("AINp = AIN 3, AINn = GND"); break;
 
   }
+  // tla.setMode(TLA202x_MODE_CONTINUOUS);
+  Serial.print("Reading mode: ");
+  switch(tla.getMode()){
+    case TLA202x_MODE_ONE_SHOT: Serial.println("One-shot"); break;
+    case TLA202x_MODE_CONTINUOUS: Serial.println("Continuous"); break;
+  }
 }
 
 void loop() {
-  Serial.print("Channel 0: ");Serial.print(tla.readVoltage(TLA202x_CHANNEL_0));Serial.println(" volts");
+  Serial.print("Channel 0: ");Serial.print(tla.readOnce(TLA202x_CHANNEL_0));Serial.println(" volts");
   Serial.println("");
   delay(100);
 }
